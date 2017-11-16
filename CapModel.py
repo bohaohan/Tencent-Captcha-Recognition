@@ -2,8 +2,7 @@
 __author__ = 'bohaohan'
 import numpy as np
 
-from keras.applications.xception import preprocess_input
-from keras.applications.mobilenet import MobileNet
+from keras.applications.mobilenet import MobileNet, preprocess_input
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from scipy import misc
@@ -16,10 +15,20 @@ class CapModel:
         self.model = self.get_model()
 
     def pre_process_test_img(self, path):
+        """
+        Preprocess the image
+        :param path: path of the image
+        :return: processed image
+        """
         test_x = [misc.imresize(misc.imread(path), self.img_size)]
         return preprocess_input(np.array(test_x).astype(float))
 
     def get_model(self, pre_train_path="cap1.h5"):
+        """
+        Get the model
+        :param pre_train_path:  path of weights of pre-trained model
+        :return: Keras model
+        """
         print "Loading model..."
         input_image = Input(shape=(self.img_size[0], self.img_size[1], 3))
         base_model = MobileNet(input_tensor=input_image, weights=None, include_top=False, pooling='avg')
@@ -35,6 +44,12 @@ class CapModel:
         return model
 
     def predict(self, path="test_cap.png"):
+        """
+        Predict the Captcha
+        :param path: path of the Captcha
+        :return:
+        result: String of the result
+        """
         result = ""
         test_x = self.pre_process_test_img(path)
         prediction = self.model.predict(test_x)
